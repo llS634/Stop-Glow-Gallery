@@ -1,14 +1,4 @@
-const cursorConfig = {
-    '#exhibit-submit': {
-        image: 'assets/cursor/submit-cursor.svg',
-        hotspot: [10, 10] // Optional: cursor hotspot coordinates [x, y]
-    }
-    // Add more elements here as needed
-    // Example:
-    // '.another-button': {
-    //     image: 'assets/cursor/another-cursor.svg'
-    // }
-};
+const cursorConfig = {};
 
 class CustomCursorManager {
     constructor(config) {
@@ -19,12 +9,7 @@ class CustomCursorManager {
         this.init();
     }
 
-    /**
-     * Initialize the cursor manager
-     * Sets up event listeners for all configured elements
-     */
     init() {
-        // Wait for DOM to be ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.setupCursors());
         } else {
@@ -32,9 +17,6 @@ class CustomCursorManager {
         }
     }
 
-    /**
-     * Setup cursors for all configured elements
-     */
     setupCursors() {
         Object.entries(this.config).forEach(([selector, options]) => {
             const elements = document.querySelectorAll(selector);
@@ -50,21 +32,13 @@ class CustomCursorManager {
         });
     }
 
-    /**
-     * Attach custom cursor to a single element
-     * @param {HTMLElement} element - The element to attach cursor to
-     * @param {Object} options - Cursor configuration options
-     */
     attachCursor(element, options) {
         const { image, hotspot = [0, 0] } = options;
         
-        // Build cursor CSS value
         const cursorValue = this.buildCursorValue(image, hotspot);
         
-        // Store original cursor style
         const originalCursor = element.style.cursor || 'default';
         
-        // Create event handlers
         const handleMouseEnter = () => {
             element.style.cursor = cursorValue;
             this.activeCursor = element;
@@ -77,11 +51,9 @@ class CustomCursorManager {
             }
         };
 
-        // Attach event listeners
         element.addEventListener('mouseenter', handleMouseEnter);
         element.addEventListener('mouseleave', handleMouseLeave);
 
-        // Store cleanup function
         this.elements.set(element, {
             handleMouseEnter,
             handleMouseLeave,
@@ -89,23 +61,11 @@ class CustomCursorManager {
         });
     }
 
-    /**
-     * Build CSS cursor value from image path and hotspot
-     * @param {string} imagePath - Path to cursor image
-     * @param {number[]} hotspot - [x, y] coordinates for hotspot
-     * @returns {string} CSS cursor value
-     */
     buildCursorValue(imagePath, hotspot) {
         const [x, y] = hotspot;
         return `url('${imagePath}') ${x} ${y}, auto`;
     }
 
-    /**
-     * Add a new element to the cursor configuration
-     * Useful for dynamically added elements
-     * @param {string} selector - CSS selector
-     * @param {Object} options - Cursor configuration options
-     */
     addCursor(selector, options) {
         this.config[selector] = options;
         const elements = document.querySelectorAll(selector);
@@ -117,10 +77,6 @@ class CustomCursorManager {
         });
     }
 
-    /**
-     * Remove cursor from an element
-     * @param {string} selector - CSS selector
-     */
     removeCursor(selector) {
         const elements = document.querySelectorAll(selector);
         elements.forEach(element => {
@@ -135,9 +91,6 @@ class CustomCursorManager {
         delete this.config[selector];
     }
 
-    /**
-     * Cleanup all cursors and event listeners
-     */
     destroy() {
         this.elements.forEach((handlers, element) => {
             element.removeEventListener('mouseenter', handlers.handleMouseEnter);
@@ -149,9 +102,7 @@ class CustomCursorManager {
     }
 }
 
-// Create and export the cursor manager instance
 const customCursorManager = new CustomCursorManager(cursorConfig);
 
-// Export for use in other modules
 export default customCursorManager;
 export { cursorConfig };

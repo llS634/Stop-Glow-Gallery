@@ -14,6 +14,7 @@ const gltfCache = new Map();
 
 let texts = {};
 
+/* Language Detection & Loading ------------------------------------------------------------------------------*/
 function getUserLanguage() {
     const lang = navigator.language || navigator.userLanguage;
     return lang.startsWith('ru') ? 'ru' : 'en';
@@ -33,6 +34,7 @@ async function loadLanguage() {
     }
 }
 
+/* Gallery Data ------------------------------------------------------------------------------*/
 const galleryData = {
     solo: [
         {
@@ -64,8 +66,12 @@ let isAuthorsOpen = false;
 
 init();
 
+/* Initialization ------------------------------------------------------------------------------*/
 async function init() {
     await loadLanguage();
+    updateFormTexts();
+    updateMenuTexts();
+    updateInfoModalTexts();
 
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(2.7, 1.7, 3.1);
@@ -109,9 +115,21 @@ async function init() {
     loadFullLamp();
 
     window.addEventListener('resize', onWindowResize);
+    window.addEventListener('resize', () => {
+        if (isMenuOpen) {
+            const menuLogo = document.querySelector('.menu-logo');
+            const textBlockLogo = document.querySelector('.text-block-1 .logo');
+            if (menuLogo && textBlockLogo) {
+                const rect = textBlockLogo.getBoundingClientRect();
+                menuLogo.style.top = `${rect.top}px`;
+                menuLogo.style.left = `${rect.left}px`;
+            }
+        }
+    });
     animate();
 }
 
+/* 3D Model Management ------------------------------------------------------------------------------*/
 function disposeModel(model) {
     model.traverse(obj => {
         if (obj.isMesh) {
@@ -142,6 +160,7 @@ async function loadGLTF(url) {
     return gltf.scene.clone(true);
 }
 
+/* UI Setup & Controls ------------------------------------------------------------------------------*/
 function setupUI() {
     const modeToggle = document.getElementById('mode-toggle');
 
@@ -172,8 +191,11 @@ function setupUI() {
         img.addEventListener('mouseenter', () => img.src = hoverSrc);
         img.addEventListener('mouseleave', () => img.src = original);
     });
+
+    setupMenu();
 }
 
+/* Text Translation ------------------------------------------------------------------------------*/
 const textElements = [
     { selector: '.text-heading', key: 'text-heading' },
     { selector: '.solo', key: 'solo' },
@@ -211,6 +233,155 @@ function updateUITexts(currentGalleryItem = null) {
     });
 }
 
+function updateFormTexts() {
+    if (!texts.form) return;
+
+    document.querySelectorAll('#exhibit-form [data-translate], #exhibit-submit[data-translate]').forEach(el => {
+        const key = el.getAttribute('data-translate');
+        const value = getNestedValue(texts, key);
+        if (value) {
+            el.textContent = el.tagName === 'BUTTON' ? value : `[${value}]`;
+        }
+    });
+
+    document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-translate-placeholder');
+        const value = getNestedValue(texts, key);
+        if (value) {
+            el.placeholder = value;
+        }
+    });
+}
+
+function getNestedValue(obj, path) {
+    return path.split('.').reduce((current, key) => current?.[key], obj);
+}
+
+function updateThirdSocialLinks() {
+    const thirdValue = texts.menu?.social?.third;
+    if (!thirdValue) return;
+
+    const value = String(thirdValue).toLowerCase();
+    const url = value.includes('tg')
+        ? 'https://t.me/maakdes'
+        : 'https://x.com/elis_sash';
+
+    const menuThird = document.getElementById('menuSocialThird');
+    if (menuThird) {
+        menuThird.href = url;
+        menuThird.target = '_blank';
+        menuThird.rel = 'noopener noreferrer';
+    }
+
+    const contactThird = document.getElementById('contactSocialThird');
+    if (contactThird) {
+        contactThird.href = url;
+        contactThird.target = '_blank';
+        contactThird.rel = 'noopener noreferrer';
+    }
+}
+
+/* Menu Management ------------------------------------------------------------------------------*/
+let isMenuOpen = false;
+
+function setupMenu() {
+    const burgerMenu = document.getElementById('burgerMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const menuExhibitButton = document.getElementById('menuExhibitButton');
+    const exhibitTrigger = document.querySelector('.nav-button');
+
+    if (!burgerMenu || !menuOverlay) return;
+
+    burgerMenu.addEventListener('click', () => {
+        toggleMenu();
+    });
+
+    menuOverlay.addEventListener('click', (e) => {
+        if (e.target === menuOverlay) {
+            closeMenu();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isMenuOpen) {
+            closeMenu();
+        }
+    });
+
+    if (menuExhibitButton) {
+        menuExhibitButton.addEventListener('click', () => {
+            if (exhibitTrigger) {
+                exhibitTrigger.click();
+            }
+        });
+    }
+}
+
+function toggleMenu() {
+    if (isMenuOpen) {
+        closeMenu();
+    } else {
+        openMenu();
+    }
+}
+
+function openMenu() {
+    const burgerMenu = document.getElementById('burgerMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const menuContainer = document.querySelector('.menu');
+    const menuLogo = document.querySelector('.menu-logo');
+    const textBlockLogo = document.querySelector('.text-block-1 .logo');
+    
+    if (!burgerMenu || !menuOverlay) return;
+
+    isMenuOpen = true;
+    burgerMenu.classList.add('active');
+    menuOverlay.classList.add('is-open');
+    if (menuContainer) {
+        menuContainer.style.zIndex = '1002';
+    }
+    
+    if (menuLogo && textBlockLogo) {
+        const rect = textBlockLogo.getBoundingClientRect();
+        menuLogo.style.top = `${rect.top}px`;
+        menuLogo.style.left = `${rect.left}px`;
+    }
+    
+    document.body.style.overflow = 'hidden';
+    updateMenuTexts();
+}
+
+function closeMenu() {
+    const burgerMenu = document.getElementById('burgerMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const menuContainer = document.querySelector('.menu');
+    
+    if (!burgerMenu || !menuOverlay) return;
+
+    isMenuOpen = false;
+    burgerMenu.classList.remove('active');
+    menuOverlay.classList.remove('is-open');
+    if (menuContainer) {
+        menuContainer.style.zIndex = '';
+    }
+    document.body.style.overflow = '';
+}
+
+function updateMenuTexts() {
+    if (!texts.menu) return;
+
+    document.querySelectorAll('.menu-overlay [data-translate]').forEach(el => {
+        const key = el.getAttribute('data-translate');
+        const value = getNestedValue(texts, key);
+        if (value) {
+            el.textContent = (el.tagName === 'BUTTON' || el.tagName === 'A' || el.tagName === 'P') ? value : `[${value}]`;
+        }
+    });
+
+    updateThirdSocialLinks();
+}
+
+/* Gallery Navigation & Loading ------------------------------------------------------------------------------*/
 async function loadFullLamp() {
     const data = galleryData[currentMode];
     const item = data[currentIndex];
@@ -244,6 +415,7 @@ async function loadFullLamp() {
     hint.classList.remove('visible');
 }
 
+/* Animation & Window Resize ------------------------------------------------------------------------------*/
 function animate() {
     requestAnimationFrame(animate);
     controls.update();
@@ -256,13 +428,13 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-/*Tooltip------------------------------------------------------------------------------------*/
+/* Tooltip ------------------------------------------------------------------------------*/
 document.addEventListener('mousemove', e => {
     document.documentElement.style.setProperty('--mouse-x', e.clientX + 'px');
     document.documentElement.style.setProperty('--mouse-y', e.clientY + 'px');
 });
 
-/*Icon-interactive------------------------------------------------------------------------------------*/
+/* Icon Interactive Hover ------------------------------------------------------------------------------*/
 document.querySelectorAll('.icon-interactive[data-hover]').forEach(img => {
     const original = img.src;
     const hoverSrc = img.dataset.hover;
@@ -271,7 +443,111 @@ document.querySelectorAll('.icon-interactive[data-hover]').forEach(img => {
     img.addEventListener('mouseleave', () => img.src = original);
 });
 
-/* Exhibit Modal ------------------------------------------------------------------------------*/
+/* Info Modal ------------------------------------------------------------------------------*/
+const infoModal = document.getElementById('info-modal');
+const infoDialog = infoModal?.querySelector('.modal__dialog');
+const infoTrigger = document.querySelector('.icon-info');
+
+const openInfoModal = () => {
+    if (!infoModal) return;
+    infoModal.classList.add('is-open');
+    infoModal.setAttribute('aria-hidden', 'false');
+    updateInfoModalTexts();
+};
+
+const closeInfoModal = () => {
+    if (!infoModal) return;
+    infoModal.classList.remove('is-open');
+    infoModal.setAttribute('aria-hidden', 'true');
+};
+
+if (infoTrigger && infoModal) {
+    infoTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        openInfoModal();
+    });
+}
+
+if (infoModal && infoDialog) {
+    infoModal.addEventListener('click', evt => {
+        if (evt.target === infoModal) {
+            closeInfoModal();
+        }
+    });
+}
+
+document.addEventListener('keydown', evt => {
+    if (evt.key === 'Escape' && infoModal?.classList.contains('is-open')) {
+        closeInfoModal();
+    }
+});
+
+function updateInfoModalTexts() {
+    if (!texts.menu) return;
+
+    document.querySelectorAll('#info-modal [data-translate]').forEach(el => {
+        const key = el.getAttribute('data-translate');
+        const value = getNestedValue(texts, key);
+        if (value) {
+            el.textContent = value;
+        }
+    });
+}
+
+/* Contact Modal ------------------------------------------------------------------------------*/
+const contactModal = document.getElementById('contact-modal');
+const contactDialog = contactModal?.querySelector('.modal__dialog');
+const contactTrigger = document.querySelector('.icon-contact');
+
+const openContactModal = () => {
+    if (!contactModal) return;
+    contactModal.classList.add('is-open');
+    contactModal.setAttribute('aria-hidden', 'false');
+    updateContactModalTexts();
+};
+
+const closeContactModal = () => {
+    if (!contactModal) return;
+    contactModal.classList.remove('is-open');
+    contactModal.setAttribute('aria-hidden', 'true');
+};
+
+if (contactTrigger && contactModal) {
+    contactTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        openContactModal();
+    });
+}
+
+if (contactModal && contactDialog) {
+    contactModal.addEventListener('click', evt => {
+        if (evt.target === contactModal) {
+            closeContactModal();
+        }
+    });
+}
+
+document.addEventListener('keydown', evt => {
+    if (evt.key === 'Escape' && contactModal?.classList.contains('is-open')) {
+        closeContactModal();
+    }
+});
+
+function updateContactModalTexts() {
+    if (!texts.menu) return;
+
+    document.querySelectorAll('#contact-modal [data-translate]').forEach(el => {
+        const key = el.getAttribute('data-translate');
+        const value = getNestedValue(texts, key);
+        if (value) {
+            el.textContent = value;
+        }
+    });
+
+    updateThirdSocialLinks();
+}
+
+/* Exhibit Modal & Form ------------------------------------------------------------------------------*/
 const exhibitModal = document.getElementById('exhibit-modal');
 const exhibitDialog = exhibitModal?.querySelector('.modal__dialog');
 const exhibitTrigger = document.querySelector('.nav-button');
@@ -314,6 +590,7 @@ document.addEventListener('keydown', evt => {
     }
 });
 
+/* Form Validation ------------------------------------------------------------------------------*/
 const validateField = field => {
     const isValid = field.value.trim() !== '';
     field.classList.toggle('field-error', !isValid);
@@ -328,6 +605,7 @@ requiredFields.forEach(field => {
     });
 });
 
+/* Form Submission ------------------------------------------------------------------------------*/
 if (exhibitForm) {
     exhibitForm.addEventListener('submit', async evt => {
         evt.preventDefault();
@@ -336,13 +614,13 @@ if (exhibitForm) {
 
         const allValid = requiredFields.every(validateField);
         if (!allValid) {
-            formStatus.textContent = 'Заполните все обязательные поля.';
+            formStatus.textContent = texts.form?.errors?.required || 'Заполните все обязательные поля.';
             formStatus.classList.add('error');
             return;
         }
 
         submitButton.disabled = true;
-        submitButton.textContent = 'Отправка...';
+        submitButton.textContent = texts.form?.submitting || 'Отправка...';
 
         const formData = new FormData(exhibitForm);
 
@@ -354,19 +632,19 @@ if (exhibitForm) {
             });
 
             if (response.ok) {
-                formStatus.textContent = 'Готово! Мы скоро свяжемся.';
+                formStatus.textContent = texts.form?.success || 'Готово! Мы скоро свяжемся.';
                 formStatus.classList.add('success');
                 exhibitForm.reset();
             } else {
-                formStatus.textContent = 'Не удалось отправить. Попробуйте позже.';
+                formStatus.textContent = texts.form?.errors?.failed || 'Не удалось отправить. Попробуйте позже.';
                 formStatus.classList.add('error');
             }
         } catch (error) {
-            formStatus.textContent = 'Произошла ошибка сети.';
+            formStatus.textContent = texts.form?.errors?.network || 'Произошла ошибка сети.';
             formStatus.classList.add('error');
         } finally {
             submitButton.disabled = false;
-            submitButton.textContent = 'Отправить';
+            submitButton.textContent = texts.form?.submit || 'Отправить';
         }
     });
 }

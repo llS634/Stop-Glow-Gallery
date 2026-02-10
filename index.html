@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Stop&Glow Gallery</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="font-license" content="Licensed font TypeType: TT Norms Pro, TT Norms Pro Mono - https://typetype.org/">
     <link rel="icon" href="assets/favicon/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_outward">
@@ -41,6 +42,36 @@
             </button>
         </div>
 
+        <div class="menu-overlay" id="menuOverlay">
+            <div class="menu-logo">
+                <img class="logo" src="assets/icon/logo.svg" alt="">
+            </div>
+
+            <div class="menu-content">
+                <div class="menu-description">
+                    <p class="menu-text" data-translate="menu.description1"></p>
+                    <p class="menu-text" data-translate="menu.description2"></p>
+                </div>
+
+                <div class="menu-exhibit">
+                    <button class="menu-exhibit-button" id="menuExhibitButton" data-translate="menu.exhibit">Exhibit</button>
+                </div>
+
+                <div class="menu-social">
+                    <div class="menu-social-links">
+                        <a href="https://mail.google.com/mail/?view=cm&to=elisa.sashenkova@gmail.com" class="menu-social-link menu-social-at" target="_blank" rel="noopener noreferrer">@</a>
+                        <a href="https://sashenkova.com/" class="menu-social-link" data-translate="menu.social.portfolio" target="_blank" rel="noopener noreferrer">portfolio</a>
+                        <a href="https://github.com/llS634" class="menu-social-link" data-translate="menu.social.github" target="_blank" rel="noopener noreferrer">github</a>
+                        <a href="#" class="menu-social-link" id="menuSocialThird" data-translate="menu.social.third">tg</a>
+                    </div>
+                </div>
+
+            <div class="menu-footer">
+                <p class="menu-footer-text" data-translate="menu.footer"></p>
+            </div>
+        </div>
+        </div>
+
         <nav class="nav">
             <a class="icon-info" href="#" data-tooltip="">
                 <img class="icon-interactive" src="assets/icon/info.svg" data-hover="assets/icon/info-hover.svg" alt="">
@@ -67,10 +98,8 @@
     <main class="overlay-ui">
         <div class="text-block-1">
             <img class="logo" src="assets/icon/logo.svg" alt="">
-
             <div class="heading">
             <p class="text-heading"></p>
-            [<a href="https://example.com" class="project-link"><span class="material-symbols-outlined">arrow_outward</span></a>]
             </div>
         </div>
 
@@ -84,44 +113,67 @@
         </div>
 
         <div class="counter" id="counter"></div>
+
         <div class="author" id="author">
             [<a href="#" id="author-link"><span id="author-name"></span><span class="material-symbols-outlined">arrow_outward</span></a>]
         </div>
+
         <p class="text-author" id="text-author"></p>
     </main>
+
+    <div class="modal" id="info-modal" aria-hidden="true">
+        <div class="modal__dialog" role="dialog" aria-modal="true">
+            <div class="info-modal-content">
+                <p class="info-modal-text" data-translate="menu.description1"></p>
+                <p class="info-modal-text" data-translate="menu.description2"></p>
+                <p class="info-modal-text" data-translate="menu.footer"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="contact-modal" aria-hidden="true">
+        <div class="modal__dialog contact-modal__dialog" role="dialog" aria-modal="true">
+            <div class="contact-modal-content">
+                <a href="https://sashenkova.com/" class="contact-social-link contact-social-top-left" data-translate="menu.social.portfolio" target="_blank" rel="noopener noreferrer">portfolio</a>
+                <a href="https://mail.google.com/mail/?view=cm&to=elisa.sashenkova@gmail.com" class="contact-social-link contact-social-top-right contact-social-at" target="_blank" rel="noopener noreferrer">@</a>
+                <a href="https://github.com/llS634" class="contact-social-link contact-social-bottom-left" data-translate="menu.social.github" target="_blank" rel="noopener noreferrer">github</a>
+                <a href="#" class="contact-social-link contact-social-bottom-right" id="contactSocialThird" data-translate="menu.social.third">tg</a>
+            </div>
+        </div>
+    </div>
 
     <div class="modal" id="exhibit-modal" aria-hidden="true">
         <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="exhibit-title">
             <form id="exhibit-form" class="exhibit-form" action="https://formspree.io/f/xnjjdlwz/" method="POST" novalidate>
                 <div class="form-field">
-                    <span class="field-label" id="exhibit-title">[Имя]</span>
-                    <input type="text" name="name" placeholder="ВАШЕ / КОМАНДЫ" required autocomplete="name">
+                    <span class="field-label" id="exhibit-title" data-translate="form.name.label">[Имя]</span>
+                    <input type="text" name="name" data-translate-placeholder="form.name.placeholder" placeholder="ВАШЕ / КОМАНДЫ" required autocomplete="name">
                 </div>
 
                 <div class="form-field">
-                    <span class="field-label">[Cтикеры]</span>
-                    <input type="url" name="stickers" placeholder="ССЫЛКА FIGMA" required inputmode="url">
+                    <span class="field-label" data-translate="form.stickers.label">[Cтикеры]</span>
+                    <input type="url" name="stickers" data-translate-placeholder="form.stickers.placeholder" placeholder="ССЫЛКА FIGMA" required inputmode="url">
                 </div>
 
                 <div class="form-field">
-                    <span class="field-label">[Описание]</span>
-                    <textarea name="description" placeholder="ТЕКСТ ДЛЯ СТИКЕРОВ" required></textarea>
+                    <span class="field-label" data-translate="form.description.label">[Описание]</span>
+                    <textarea name="description" data-translate-placeholder="form.description.placeholder" placeholder="ТЕКСТ ДЛЯ СТИКЕРОВ" required></textarea>
                 </div>
 
                 <div class="form-field">
-                    <span class="field-label">[Контакты]</span>
-                    <input type="text" name="contacts" placeholder="СВЯЗЬ С ВАМИ" required autocomplete="tel">
+                    <span class="field-label" data-translate="form.contacts.label">[Контакты]</span>
+                    <input type="text" name="contacts" data-translate-placeholder="form.contacts.placeholder" placeholder="СВЯЗЬ С ВАМИ" required autocomplete="tel">
                 </div>
 
                 <div class="form-field">
-                    <span class="field-label">[Соцсети]</span>
-                    <input type="text" name="social" placeholder="ДЛЯ ОПИСАНИЯ" required autocomplete="url">
+                    <span class="field-label" data-translate="form.social.label">[Соцсети]</span>
+                    <input type="text" name="social" data-translate-placeholder="form.social.placeholder" placeholder="ДЛЯ ОПИСАНИЯ" required autocomplete="url">
                 </div>
 
                 <div class="form-status" id="form-status" aria-live="polite"></div>
 
                 <div class="modal__actions">
-                    <button type="submit" class="modal__button" id="exhibit-submit">Отправить</button>
+                    <button type="submit" class="modal__button" id="exhibit-submit" data-translate="form.submit">Отправить</button>
                 </div>
             </form>
         </div>

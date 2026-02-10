@@ -1,5 +1,5 @@
 {
-  "text-heading": "Sticker Gallery of the Stop&Glow Light Therapy Art Lamp Project",
+  "text-heading": "Sticker Gallery of the Stop&Glow Light Therapy Art Lamp project",
   "solo": "[Solo]",
   "team": "[Team]",
 
@@ -13,11 +13,52 @@
   "nav-button": "Submit application",
 
   "solo_1_author": "Gallery Author",
-  "solo_1_desc": "This gallery was created out of my interest in the interactive web and my fan base. This is a place where you can show your creativity by using a Stop&Glow lamp as a canvas for your stickers.",
+  "solo_1_desc": "This gallery was born out of my interest in the interactive web and a fan of experimentation. This is a space where you can show your creativity by using a Stop&Glow lamp as a canvas for stickers.",
 
   "solo_2_author": "...",
   "solo_2_desc": "Here you can put the text for your sticker exhibition",
 
   "team_1_author": "...",
-  "team_1_desc": "Here you can put the text for your team sticker exhibition"
+  "team_1_desc": "Here you can put the text for your team sticker exhibition",
+
+  "form": {
+    "name": {
+      "label": "Name",
+      "placeholder": "YOUR / TEAM"
+    },
+    "stickers": {
+      "label": "Stickers",
+      "placeholder": "FIGMA LINK"
+    },
+    "description": {
+      "label": "Description",
+      "placeholder": "TEXT FOR STICKERS"
+    },
+    "contacts": {
+      "label": "Contacts",
+      "placeholder": "CONTACT WITH YOU"
+    },
+    "social": {
+      "label": "Socials",
+      "placeholder": "FOR DESCRIPTION"
+    },
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "errors": {
+      "required": "Please fill in all required fields.",
+      "network": "Network error occurred.",
+      "failed": "Failed to send. Please try again later."
+    },
+    "success": "Done! We'll contact you soon."
+  },
+
+  "menu": {
+    "description1": "Stop&Glow is a festival case study of the light therapy lamp art object. An important part of the project is the idea of customizing the lamp with magnetic stickers created in collaboration with artists.",
+    "description2": "This idea was developed in the Stop Gallery. This is a WebGL sticker gallery that works as an online art space. Here, individual authors and teams are represented through their stickers placed on an unusual 3D object. The project rethinks the format of a digital gallery, turning a functional object into an exhibition space.",
+    "exhibit": "Exhibit",
+    "social": {
+      "third": "twitter"
+    },
+    "footer": "The website uses a licensed TypeType font: norms pro"
+  }
 }
