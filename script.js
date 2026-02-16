@@ -10,6 +10,7 @@ let gltfLoader;
 const modelHolder = new THREE.Group();
 let currentModel = null;
 const gltfCache = new Map();
+let isLoadingModel = false;
 
 let texts = {};
 
@@ -25,6 +26,7 @@ async function loadLanguage() {
 
     try {
         const response = await fetch(`./lang/${lang}.json`);
+        if (!response.ok) throw new Error('Failed to load');
         texts = await response.json();
     } catch {
         const response = await fetch('./lang/en.json');
@@ -67,7 +69,6 @@ init();
 
 /* Initialization ------------------------------------------------------------------------------*/
 async function init() {
-    // Критичные части - загружаем сразу
     await loadLanguage();
     updateFormTexts();
     updateMenuTexts();
@@ -75,27 +76,20 @@ async function init() {
 
     setupUI();
     
-    // Обновляем UI тексты сразу для раннего отображения LCP элемента
     const data = galleryData[currentMode];
     const item = data[currentIndex];
     updateUITexts(item);
 
-    // Определяем мобильное устройство один раз для оптимизации
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    // Откладываем инициализацию Three.js для уменьшения времени выполнения JS
-    // Используем requestIdleCallback для некритичных операций
     const initThree = () => {
         camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
         camera.position.set(2.7, 1.7, 3.1);
 
         scene = new THREE.Scene();
 
-        // Оптимизация для мобильных устройств - уменьшаем pixelRatio и отключаем antialias
-        const pixelRatio = isMobile ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2);
-        
-        renderer = new THREE.WebGLRenderer({ antialias: !isMobile, alpha: false });
-        renderer.setPixelRatio(pixelRatio);
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0xbbbbbb);
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -104,40 +98,18 @@ async function init() {
         document.getElementById('three-container').appendChild(renderer.domElement);
         scene.add(modelHolder);
 
-        // Продолжаем инициализацию в следующем кадре
         requestAnimationFrame(() => {
             initThreePart2(isMobile);
         });
     };
 
     const initThreePart2 = (isMobile) => {
-        // Оптимизация для мобильных - откладываем создание окружения
-        if (isMobile) {
-            scene.background = new THREE.Color(0xbbbbbb);
-            if ('requestIdleCallback' in window) {
-                requestIdleCallback(() => {
-                    const environment = new RoomEnvironment();
-                    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-                    scene.environment = pmremGenerator.fromScene(environment).texture;
-                    pmremGenerator.dispose();
-                }, { timeout: 2000 });
-            } else {
-                setTimeout(() => {
-                    const environment = new RoomEnvironment();
-                    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-                    scene.environment = pmremGenerator.fromScene(environment).texture;
-                    pmremGenerator.dispose();
-                }, 500);
-            }
-        } else {
-            const environment = new RoomEnvironment();
-            const pmremGenerator = new THREE.PMREMGenerator(renderer);
-            scene.environment = pmremGenerator.fromScene(environment).texture;
-            scene.background = new THREE.Color(0xbbbbbb);
-            pmremGenerator.dispose();
-        }
+        const environment = new RoomEnvironment();
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        scene.environment = pmremGenerator.fromScene(environment).texture;
+        scene.background = new THREE.Color(0xbbbbbb);
+        pmremGenerator.dispose();
 
-        // Продолжаем в следующем кадре
         requestAnimationFrame(() => {
             initThreePart3(isMobile);
         });
@@ -162,24 +134,9 @@ async function init() {
 
         window.addEventListener('resize', onWindowResize);
         animate();
-
-        // Загрузка модели отложена для уменьшения нагрузки на main thread
-        if (isMobile && 'requestIdleCallback' in window) {
-            requestIdleCallback(() => {
-                loadFullLamp();
-            }, { timeout: 1500 });
-        } else if ('requestIdleCallback' in window) {
-            requestIdleCallback(() => {
-                loadFullLamp();
-            }, { timeout: 500 });
-        } else {
-            setTimeout(() => {
-                loadFullLamp();
-            }, 100);
-        }
+        loadFullLamp();
     };
 
-    // Запускаем инициализацию Three.js асинхронно
     if ('requestIdleCallback' in window) {
         requestIdleCallback(initThree, { timeout: 100 });
     } else {
@@ -433,6 +390,10 @@ function updateMenuTexts() {
 
 /* Gallery Navigation & Loading ------------------------------------------------------------------------------*/
 async function loadFullLamp() {
+    if (isLoadingModel) return;
+    
+    isLoadingModel = true;
+    
     const data = galleryData[currentMode];
     const item = data[currentIndex];
 
@@ -452,17 +413,23 @@ async function loadFullLamp() {
 
     const model = await loadGLTF(item.file);
 
-    if (model) {
+    if (model && isLoadingModel) {
         const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
         model.position.sub(center);
         model.position.y += 1.1;
 
+        if (currentModel) {
+            disposeModel(currentModel);
+            modelHolder.remove(currentModel);
+        }
+        
         currentModel = model;
         modelHolder.add(model);
     }
 
     hint.classList.remove('visible');
+    isLoadingModel = false;
 }
 
 /* Animation & Window Resize ------------------------------------------------------------------------------*/
@@ -479,10 +446,8 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// Поддержка back/forward cache - восстанавливаем состояние при возврате на страницу
 window.addEventListener('pageshow', (event) => {
     if (event.persisted) {
-        // Страница загружена из кеша, перезапускаем анимацию если нужно
         if (renderer && scene && camera && controls) {
             animate();
         }
