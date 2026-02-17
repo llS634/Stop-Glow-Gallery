@@ -918,14 +918,15 @@ input:checked + .slider:before {
   }
 
   .author {
-    grid-column: 4 / 6;
+    grid-column: 3 / 6;
     grid-row: 7 / 7;
     place-self: end end;
   }
 
   .text-author {
-    place-self: end start;
+    place-self: start start;
     grid-row: 8 / 8;
+    align-self: start;
   }
 }
 
@@ -949,6 +950,10 @@ input:checked + .slider:before {
 }
 
 @media (max-width: 540px) {
+  .overlay-ui {
+    grid-template-rows: 20px repeat(6, 1fr) minmax(60px, 1fr) 20px;
+  }
+
   .toggle {
     flex-direction: row;
     grid-column: 2 / 5;
@@ -964,6 +969,17 @@ input:checked + .slider:before {
 
   .arrow-forward {
     grid-row: 3 / 3;
+  }
+
+  .text-author {
+    overflow-y: auto;
+    max-height: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .text-author::-webkit-scrollbar {
+    display: none;
   }
 }
 

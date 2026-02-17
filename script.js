@@ -83,19 +83,19 @@ async function init() {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     const initThree = () => {
-        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(2.7, 1.7, 3.1);
+    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(2.7, 1.7, 3.1);
 
-        scene = new THREE.Scene();
+    scene = new THREE.Scene();
 
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0xbbbbbb);
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1;
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0xbbbbbb);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1;
 
-        document.getElementById('three-container').appendChild(renderer.domElement);
+    document.getElementById('three-container').appendChild(renderer.domElement);
         scene.add(modelHolder);
 
         requestAnimationFrame(() => {
@@ -104,11 +104,11 @@ async function init() {
     };
 
     const initThreePart2 = (isMobile) => {
-        const environment = new RoomEnvironment();
-        const pmremGenerator = new THREE.PMREMGenerator(renderer);
-        scene.environment = pmremGenerator.fromScene(environment).texture;
-        scene.background = new THREE.Color(0xbbbbbb);
-        pmremGenerator.dispose();
+    const environment = new RoomEnvironment();
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmremGenerator.fromScene(environment).texture;
+    scene.background = new THREE.Color(0xbbbbbb);
+    pmremGenerator.dispose();
 
         requestAnimationFrame(() => {
             initThreePart3(isMobile);
@@ -116,32 +116,32 @@ async function init() {
     };
 
     const initThreePart3 = (isMobile) => {
-        controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.minDistance = 2;
-        controls.maxDistance = 10;
-        controls.target.set(0, 1.0, 0);
-        controls.maxPolarAngle = Math.PI * 0.55;
-        controls.enableZoom = true;
-        controls.zoomSpeed = 2.0;
-        controls.zoomDampingFactor = 0.15;
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.minDistance = 2;
+    controls.maxDistance = 10;
+    controls.target.set(0, 1.0, 0);
+    controls.maxPolarAngle = Math.PI * 0.55;
+    controls.enableZoom = true;
+    controls.zoomSpeed = 2.0;
+    controls.zoomDampingFactor = 0.15;
 
-        const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
-        gltfLoader = new GLTFLoader();
-        gltfLoader.setDRACOLoader(dracoLoader);
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+    gltfLoader = new GLTFLoader();
+    gltfLoader.setDRACOLoader(dracoLoader);
 
         window.addEventListener('resize', onWindowResize);
         animate();
-        loadFullLamp();
+    loadFullLamp();
     };
 
     if ('requestIdleCallback' in window) {
         requestIdleCallback(initThree, { timeout: 100 });
     } else {
         requestAnimationFrame(initThree);
-    }
+            }
 }
 
 /* 3D Model Management ------------------------------------------------------------------------------*/
@@ -183,7 +183,7 @@ function setupUI() {
         currentMode = modeToggle.checked ? 'team' : 'solo';
         currentIndex = 0;
         loadFullLamp();
-        // closeAuthorsList не определена, убираем вызов
+
     });
 
     document.getElementById('prev').addEventListener('click', e => {
@@ -423,7 +423,7 @@ async function loadFullLamp() {
             disposeModel(currentModel);
             modelHolder.remove(currentModel);
         }
-        
+
         currentModel = model;
         modelHolder.add(model);
     }
