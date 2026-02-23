@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Stop Gallery</title>
+    <meta name="description" content="Stop Gallery — WebGL sticker gallery featuring interactive 3D art space. Explore custom magnetic stickers on light therapy lamp art objects created in collaboration with artists.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="font-license" content="Licensed font TypeType: TT Norms Pro, TT Norms Pro Mono - https://typetype.org/">
+    <link rel="icon" href="assets/favicon/favicon.ico" type="image/x-icon">
+    
+    <link rel="preload" href="./lang/ru.json" as="fetch" crossorigin>
+    <link rel="preload" href="./lang/en.json" as="fetch" crossorigin>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        @font-face {
+        font-family: 'TT Norms Pro';
+        src: url('assets/fonts/TT_Norms_Pro_Variable.woff2') format('woff2');
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+      }
+
+        @font-face {
+        font-family: 'TT Norms Pro Mono';
+        src: url('assets/fonts/TT_Norms_Pro_Mono_Variable.woff2') format('woff2');
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+      }
+    </style>
+</head>
+
+<body>
+    <div id="three-container">
+        <div id="loading" class="hidden">
+            <img src="assets/icon/loading.svg" alt="">
+        </div>
+    </div>
+
+    <header>
+        <div class="menu">
+            <button class="burger-menu" id="burgerMenu">
+                <img src="assets/icon/burger-menu.svg" alt="">
+            </button>
+        </div>
+
+        <div class="menu-overlay" id="menuOverlay">
+            <div class="menu-content">
+                <div class="menu-description">
+                    <p class="menu-text" data-translate="menu.description1"></p>
+                    <p class="menu-text" data-translate="menu.description2"></p>
+                </div>
+
+                <div class="menu-exhibit">
+                    <button class="menu-exhibit-button" id="menuExhibitButton" data-translate="menu.exhibit">Exhibit</button>
+                </div>
+
+                <div class="menu-social">
+                    <div class="menu-social-links">
+                        <a href="https://mail.google.com/mail/?view=cm&to=elisa.sashenkova@gmail.com" class="menu-social-link menu-social-at" target="_blank" rel="noopener noreferrer">@</a>
+                        <a href="https://sashenkova.com/" class="menu-social-link" data-translate="menu.social.portfolio" target="_blank" rel="noopener noreferrer">portfolio</a>
+                        <a href="https://github.com/llS634" class="menu-social-link" data-translate="menu.social.github" target="_blank" rel="noopener noreferrer">github</a>
+                        <a href="#" class="menu-social-link" id="menuSocialThird" data-translate="menu.social.third">tg</a>
+                    </div>
+                </div>
+
+            <div class="menu-footer">
+                <p class="menu-footer-text" data-translate="menu.footer"></p>
+            </div>
+        </div>
+        </div>
+
+        <nav class="nav">
+            <div class="icon-info" data-tooltip="" role="button" tabindex="0">
+                <img class="icon-interactive" src="assets/icon/info.svg" data-hover="assets/icon/info-hover.svg" alt="">
+            </div>
+
+            <div class="icon-contact" data-tooltip="" role="button" tabindex="0">
+                <img class="icon-interactive" src="assets/icon/contact.svg" data-hover="assets/icon/contact-hover.svg" alt="">
+            </div>
+
+            <button class="nav-button" data-tooltip="">Exhibit</button>
+        </nav>
+
+        <div class="paging">
+            <div class="arrow arrow-back" id="prev">
+                <a href="https://example.com" aria-label="Previous item"><span class="arrow-button"></span></a>
+            </div>
+
+            <div class="arrow arrow-forward" id="next">
+                <a href="https://example.com" aria-label="Next item"><span class="arrow-button"></span></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="overlay-ui">
+        <div class="text-block-1">
+            <img class="logo" src="assets/icon/logo.svg" alt="">
+            <div class="heading">
+            <p class="text-heading"></p>
+            </div>
+        </div>
+
+        <div class="toggle">
+            <span class="solo"></span>
+            <label class="switch" for="mode-toggle">
+                <input type="checkbox" id="mode-toggle" aria-label="Toggle between solo and team mode">
+                <span class="slider"></span>
+            </label>
+            <span class="team"></span>
+        </div>
+
+        <div class="counter" id="counter"></div>
+
+        <div class="author" id="author">
+            [<a href="#" id="author-link"><span id="author-name"></span><svg class="arrow-outward-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 18L18 6M18 6H10M18 6V14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>]
+        </div>
+
+        <p class="text-author" id="text-author"></p>
+    </main>
+
+    <div class="modal" id="info-modal" aria-hidden="true">
+        <div class="modal__dialog" role="dialog" aria-modal="true">
+            <div class="info-modal-content">
+                <p class="info-modal-text" data-translate="menu.description1"></p>
+                <p class="info-modal-text" data-translate="menu.description2"></p>
+                <p class="info-modal-text" data-translate="menu.footer"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="contact-modal" aria-hidden="true">
+        <div class="modal__dialog contact-modal__dialog" role="dialog" aria-modal="true">
+            <div class="contact-modal-content">
+                <a href="https://sashenkova.com/" class="contact-social-link contact-social-top-left" data-translate="menu.social.portfolio" target="_blank" rel="noopener noreferrer">portfolio</a>
+                <a href="https://mail.google.com/mail/?view=cm&to=elisa.sashenkova@gmail.com" class="contact-social-link contact-social-top-right contact-social-at" target="_blank" rel="noopener noreferrer">@</a>
+                <a href="https://github.com/llS634" class="contact-social-link contact-social-bottom-left" data-translate="menu.social.github" target="_blank" rel="noopener noreferrer">github</a>
+                <a href="#" class="contact-social-link contact-social-bottom-right" id="contactSocialThird" data-translate="menu.social.third">tg</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="exhibit-modal" aria-hidden="true">
+        <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="exhibit-title">
+            <form id="exhibit-form" class="exhibit-form" action="https://formspree.io/f/xnjjdlwz/" method="POST" novalidate>
+                <div class="form-field">
+                    <span class="field-label" id="exhibit-title" data-translate="form.name.label">[Имя]</span>
+                    <input type="text" name="name" data-translate-placeholder="form.name.placeholder" placeholder="ВАШЕ / КОМАНДЫ" required autocomplete="name">
+                </div>
+
+                <div class="form-field">
+                    <span class="field-label" data-translate="form.stickers.label">[Cтикеры]</span>
+                    <input type="url" name="stickers" data-translate-placeholder="form.stickers.placeholder" placeholder="ССЫЛКА FIGMA" required inputmode="url">
+                </div>
+
+                <div class="form-field">
+                    <span class="field-label" data-translate="form.description.label">[Описание]</span>
+                    <textarea name="description" data-translate-placeholder="form.description.placeholder" placeholder="ТЕКСТ ДЛЯ СТИКЕРОВ" required></textarea>
+                </div>
+
+                <div class="form-field">
+                    <span class="field-label" data-translate="form.contacts.label">[Контакты]</span>
+                    <input type="text" name="contacts" data-translate-placeholder="form.contacts.placeholder" placeholder="СВЯЗЬ С ВАМИ" required autocomplete="tel">
+                </div>
+
+                <div class="form-field">
+                    <span class="field-label" data-translate="form.social.label">[Соцсети]</span>
+                    <input type="text" name="social" data-translate-placeholder="form.social.placeholder" placeholder="ДЛЯ ОПИСАНИЯ" required autocomplete="url">
+                </div>
+
+                <div class="form-status" id="form-status" aria-live="polite"></div>
+
+                <div class="modal__actions">
+                    <button type="submit" class="modal__button" id="exhibit-submit" data-translate="form.submit">Отправить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+(function() {
+    var link = document.querySelector('link[rel="preload"][href="style.css"]');
+    if (link && !link.onload) {
+        var fallback = document.createElement('link');
+        fallback.rel = 'stylesheet';
+        fallback.href = 'style.css';
+        document.head.appendChild(fallback);
+    }
+})();
+</script>
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+}
+</script>
+
+<script>
+(function() {
+    const lang = (navigator.language || navigator.userLanguage).startsWith('ru') ? 'ru' : 'en';
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.href = `./lang/${lang}.json`;
+    link.as = 'fetch';
+    link.crossOrigin = 'anonymous';
+    document.head.appendChild(link);
+})();
+</script>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
